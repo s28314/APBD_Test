@@ -9,7 +9,7 @@
     }
   },
   "profiles": {
-    "APBD_Test": {
+    "TestProject": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
