@@ -69,7 +69,51 @@ namespace TestProject.Controllers
 
                 try
                 {
-                    string query = @"
+                    string query = $"SELECT COUNT(IdProject) FROM Project WHERE IdProject = @IdProject";
+                    using (SqlCommand myCommand = new SqlCommand(query, myCon, transaction))
+                    {
+                        myCommand.Parameters.AddWithValue("@IdProject", task.IdProject);
+                        if ((int)myCommand.ExecuteScalar() == 0)
+                        {
+                            transaction.Rollback();
+                            return NotFound($"No project found with Id {task.IdProject}");
+                        }
+                    }
+                    
+                    query = $"SELECT COUNT(IdTaskType) FROM TaskType WHERE IdTaskType = @IdTaskType";
+                    using (SqlCommand myCommand = new SqlCommand(query, myCon, transaction))
+                    {
+                        myCommand.Parameters.AddWithValue("@IdTaskType", task.IdTaskType);
+                        if ((int)myCommand.ExecuteScalar() == 0)
+                        {
+                            transaction.Rollback();
+                            return NotFound($"No task found with Id {task.IdTaskType}");
+                        }
+                    }
+                    
+                    query = $"SELECT COUNT(IdTeamMember) FROM TeamMember WHERE IdTeamMember = @IdAssignedTo";
+                    using (SqlCommand myCommand = new SqlCommand(query, myCon, transaction))
+                    {
+                        myCommand.Parameters.AddWithValue("@IdAssignedTo", task.IdAssignedTo);
+                        if ((int)myCommand.ExecuteScalar() == 0)
+                        {
+                            transaction.Rollback();
+                            return NotFound($"No team member found with Id {task.IdAssignedTo}");
+                        }
+                    }
+                    
+                    query = $"SELECT COUNT(IdTeamMember) FROM TeamMember WHERE IdTeamMember = @IdCreator";
+                    using (SqlCommand myCommand = new SqlCommand(query, myCon, transaction))
+                    {
+                        myCommand.Parameters.AddWithValue("@IdCreator", task.IdCreator);
+                        if ((int)myCommand.ExecuteScalar() == 0)
+                        {
+                            transaction.Rollback();
+                            return NotFound($"No team member found with Id {task.IdCreator}");
+                        }
+                    }
+                    
+                    query = @"
            INSERT INTO Task (Name, Description, DeadLine, IdProject, IdTaskType, IdAssignedTo, IdCreator) 
            VALUES (@Name, @Description, @DeadLine, @IdProject, @IdTaskType, @IdAssignedTo, @IdCreator)";
                     using (SqlCommand myCommand = new SqlCommand(query, myCon))
